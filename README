@@ -1,0 +1,20 @@
+usage: git-push-daemon [OPTIONS]
+Options:
+  -f FILE	sources the profile stored in FILE.
+         	This should contain assignments to git-push-daemon's environment variables in shell script format.
+Uses these environment variables:
+  GPD_REPO_DIR       	!    	the path to the repo to be pushed
+  GPD_LOG_DIR        	!    	the directory to which events will be logged.
+  GPD_REPO_REMOTE    	=NONE	the remote repository which the push should target, ie the <repository> argument to $(git push).
+  GPD_LASTWIN_TIMEOUT	=0   	if this number exceeds the number of seconds since the last successful push, an error state will be returned.
+Produces these return codes:
+  0:    	the push was successful
+  1-3,6:	indicate infrastructure issues
+  4:    	shouldn't happen
+  5:    	indicates timeout since last successful push.
+  Non-zero return codes are accompanied by information and a state dump on stderr.
+Logging details:
+  All push failures are logged to $GPD_LOG_DIR/push-fails
+  Push failures which occur within the timeout period do not result in an error state and are logged to $GPD_LOG_DIR/timely-push-fails
+  All such event loggings consist of a timestamp and newline being added to the respective file.
+  In the event of a successful push, the file $GPD_LOG_DIR/lastwin is replaced with the timestamp.
